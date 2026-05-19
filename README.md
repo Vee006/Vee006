@@ -1,6 +1,6 @@
-# Hi there 👋, I'm [Your Name]
+# Hi there 👋, I'm Kuda Christine
 
-💻 Software Developer | 🚀 Tech Creator | ☕ Coffee-Fueled Problem Solver
+💻 Software Engineer | 🚀 Tech Creator | ☕ Coffee-Fueled Problem Solver
 
 ---
 
