@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NovaMotors | Pre‑Owned Cars You Can Trust</title>
+  <meta name="description" content="A modern, enterprise-style pre-owned car marketplace demo built with a single HTML file." />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <style>
+    :root{
+      --bg: #0b0f17;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --text: #eaf0ff;
+      --muted: rgba(234,240,255,0.72);
+      --border: rgba(255,255,255,0.12);
+      --accent: #6c63ff;
+      --accentBlue: #3b82f6;
+      --accentGreen: #22c55e;
+      --shadow: 0 20px 60px rgba(0,0,0,0.45);
+      --radius: 22px;
+    }
+
+    /* Light theme */
+    body[data-theme="light"]{
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --panel2: #f1f4fb;
+      --text: #101828;
+      --muted: rgba(16,24,40,0.65);
+      --border: rgba(16,24,40,0.12);
+      --shadow: 0 20px 60px rgba(16,24,40,0.12);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 70% 0%, rgba(108,99,255,0.35), transparent 60%),
+        radial-gradient(900px 500px at 0% 40%, rgba(34,197,94,0.20), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      line-height:1.5;
+    }
+
+    a{ color: inherit; text-decoration:none; }
+    .container{ width:min(1120px, 92%); margin:0 auto; }
+
+    .muted{ color: var(--muted); }
+    .small{ font-size: 0.92rem; }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    /* Topbar */
+    .topbar{
+      background: rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    body[data-theme="light"] .topbar{ background: rgba(255,255,255,0.75); }
+
+    .topbar__inner{
+      display:flex; gap:16px; align-items:center; justify-content:space-between;
+      padding: 10px 0;
+    }
+    .topbar__left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .topbar__link{ color: var(--muted); font-size: 0.95rem; }
+    .topbar__link:hover{ color: var(--text); }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      font-size: 0.85rem;
+    }
+
+    /* Header */
+    .header{
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(11,15,23,0.55);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+    body[data-theme="light"] .header{ background: rgba(247,248,251,0.85); }
+
+    .header__inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.2px; }
+    .brand__mark{
+      width: 36px; height: 36px;
+      display:grid; place-items:center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accentBlue));
+      box-shadow: 0 12px 30px rgba(108,99,255,0.35);
+      font-size: 0.95rem;
+      user-select:none;
+    }
+    .brand__name{ font-size: 1.05rem; }
+
+    .nav{ display:flex; gap: 18px; }
+    .nav a{ color: var(--muted); font-weight:600; font-size: 0.95rem; }
+    .nav a:hover{ color: var(--text); }
+
+    .header__cta{ display:flex; gap:10px; align-items:center; }
+
+    .btn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display:inline-flex; gap:10px; align-items:center; justify-content:center;
+      transition: 160ms ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0); }
+
+    .btn--primary{
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accentBlue));
+      box-shadow: 0 18px 55px rgba(108,99,255,0.35);
+    }
+    .btn--secondary{
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.35);
+    }
+    .btn--ghost{
+      background: transparent;
+    }
+
+    /* Hero */
+    .hero{ padding: 56px 0 22px; }
+    .hero__grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: center;
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+      margin: 0 0 10px;
+      line-height:1.1;
+      letter-spacing: -0.02em;
+    }
+    .lead{
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 0 0 18px;
+      max-width: 62ch;
+    }
+    .hero__actions{ display:flex; gap: 10px; flex-wrap:wrap; margin-bottom: 18px; }
+
+    .hero__trust{ display:flex; gap: 14px; flex-wrap:wrap; }
+    .trust{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px 14px;
+      min-width: 140px;
+    }
+    .trust__num{ font-weight: 800; font-size: 1.15rem; }
+    .trust__label{ color: var(--muted); font-size: 0.92rem; }
+
+    .hero__media{
+      border-radius: 26px;
+      height: 420px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.50)),
+        url("https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=1600&q=70");
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Sections */
+    .section{ padding: 54px 0; }
+    .section--alt{
+      background: rgba(255,255,255,0.03);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    body[data-theme="light"] .section--alt{ background: rgba(16,24,40,0.03); }
+
+    .section__head{
+      display:flex; align-items:flex-end; justify-content:space-between; gap: 18px;
+      margin-bottom: 22px;
+    }
+    .section__head h2{ margin:0; font-size: 2rem; letter-spacing:-0.02em; }
+    .section__head p{ margin:0; }
+
+    /* Features */
+    .features{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .feature{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .feature__icon{
+      width: 38px; height: 38px; border-radius: 14px;
+      display:grid; place-items:center;
+      background: rgba(108,99,255,0.18);
+      border: 1px solid rgba(108,99,255,0.35);
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+    .feature h3{ margin: 0 0 6px; }
+    .feature p{ margin: 0; color: var(--muted); }
+
+    /* Filters */
+    .filters{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .filters__row{
+      display:grid;
+      grid-template-columns: 170px 170px 1fr 120px;
+      gap: 12px;
+      align-items:end;
+    }
+    .filters__btn{ height: 44px; }
+
+    .field{ display:flex; flex-direction:column; gap: 6px; }
+    .field__label{ font-size: 0.9rem; color: var(--muted); font-weight:700; }
+    .field__control{
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+    }
+    body[data-theme="light"] .field__control{ background: #fff; }
+    .field__control::placeholder{ color: rgba(234,240,255,0.55); }
+    body[data-theme="light"] .field__control::placeholder{ color: rgba(16,24,40,0.45); }
+
+    /* Cards */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .card{
+      overflow:hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .card__img{
+      height: 210px;
+      background-size: cover;
+      background-position: center;
+    }
+    .card__body{ padding: 14px; }
+    .card__top{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
+    .card__top h3{ margin:0; font-size: 1.1rem; }
+    .tag{
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(59,130,246,0.14);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: var(--text);
+      white-space:nowrap;
+    }
+
+    .price{
+      display:flex; align-items:center; justify-content:space-between; gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .price__main{ font-weight: 900; font-size: 1.2rem; }
+    .price__sub{ color: var(--muted); font-size: 0.9rem; }
+
+    .card__meta{
+      display:flex; gap: 10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* Banner */
+    .banner{
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(108,99,255,0.18), rgba(34,197,94,0.12));
+      display:flex; align-items:center; justify-content:space-between; gap: 14px;
+    }
+    .banner h3{ margin:0 0 4px; }
+    .banner p{ margin:0; }
+
+    /* Testimonials */
+    .quotes{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .quote{
+      margin:0;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .quote blockquote{ margin:0 0 10px; font-size: 1rem; color: var(--text); }
+    .quote figcaption{ color: var(--muted); font-weight:700; font-size: 0.95rem; }
+
+    /* FAQ */
+    .faq{ display:grid; gap: 10px; }
+    details{
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      padding: 12px 14px;
+    }
+    summary{ cursor:pointer; font-weight: 900; }
+    details p{ margin: 10px 0 0; color: var(--muted); }
+
+    /* Contact */
+    .contact{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    .form{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .ticks{ margin: 14px 0 0; padding-left: 18px; color: var(--muted); }
+    .ticks li{ margin: 6px 0; }
+
+    /* Footer */
+    .footer{
+      border-top: 1px solid var(--border);
+      padding: 22px 0;
+      background: rgba(255,255,255,0.02);
+    }
+    .footer__inner{
+      display:flex; align-items:flex-start; justify-content:space-between; gap: 14px;
+    }
+    .footer__links{ display:flex; gap: 14px; flex-wrap:wrap; color: var(--muted); }
+    .footer__links a:hover{ color: var(--text); }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(16,24,40,0.85);
+      color: #fff;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: 220ms ease;
+      pointer-events:none;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Accessibility */
+    .skip{
+      position:absolute;
+      top:-999px;
+      left:-999px;
+      background: #fff;
+      color:#000;
+      padding: 10px 12px;
+      border-radius: 10px;
+      z-index: 100;
+    }
+    .skip:focus{ top: 12px; left: 12px; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .nav{ display:none; }
+      .hero__grid{ grid-template-columns: 1fr; }
+      .hero__media{ height: 320px; }
+      .features{ grid-template-columns: repeat(2, 1fr); }
+      .filters__row{ grid-template-columns: 1fr 1fr; }
+      .grid{ grid-template-columns: 1fr; }
+      .quotes{ grid-template-columns: 1fr; }
+      .contact{ grid-template-columns: 1fr; }
+      .footer__inner{ flex-direction:column; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip" href="#listings">Skip to listings</a>
+
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <div class="topbar__left">
+        <span class="pill">Nationwide Delivery</span>
+        <span class="muted">Trusted pre‑owned cars • Transparent pricing</span>
+      </div>
+      <div class="topbar__right">
+        <a class="topbar__link" href="#faq">FAQ</a>
+        <a class="topbar__link" href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="#" aria-label="NovaMotors home">
+        <span class="brand__mark">NM</span>
+        <span class="brand__name">NovaMotors</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#listings">Listings</a>
+        <a href="#why">Why NovaMotors</a>
+        <a href="#testimonials">Reviews</a>
+      </nav>
+
+      <div class="header__cta">
+        <button class="btn btn--ghost" id="btnTheme" type="button" aria-label="Toggle theme">
+          Theme
+        </button>
+        <a class="btn btn--primary" href="#listings">Browse cars</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Hero">
+    <div class="container hero__grid">
+      <div class="hero__content">
+        <h1>Pre‑owned cars that feel brand new.</h1>
+        <p class="lead">
+          Shop inspected vehicles with transparent pricing, flexible finance, and delivery across South Africa.
+          A modern marketplace built for trust.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#listings">See featured cars</a>
+          <a class="btn btn--secondary" href="#why">How it works</a>
+          <span class="muted small" style="display:inline-flex;align-items:center;gap:10px;">
+            Tip: press <span class="kbd">/</span> to search
+          </span>
+        </div>
+
+        <div class="hero__trust" aria-label="Trust indicators">
+          <div class="trust">
+            <div class="trust__num" id="statCars">150+</div>
+            <div class="trust__label">Cars available</div>
+          </div>
+          <div class="trust">
+            <div class="trust__num">120‑pt</div>
+            <div class="trust__label">Inspection</div>
+          </div>
+          <div class="trust">
+            <div class="trust__num">7‑day</div>
+            <div class="trust__label">Return option</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__media" role="img" aria-label="Pre-owned cars showroom image"></div>
+    </div>
+  </section>
+
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section__head">
+        <h2>Why NovaMotors?</h2>
+        <p class="muted">Enterprise-grade buying experience, built for everyday people.</p>
+      </div>
+
+      <div class="features">
+        <article class="feature">
+          <div class="feature__icon">✓</div>
+          <h3>Inspected & verified</h3>
+          <p>Every vehicle goes through a 120‑point inspection and history check.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feature__icon">R</div>
+          <h3>Transparent pricing</h3>
+          <p>No hidden fees. See total cost, finance estimate and delivery options.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feature__icon">⚡</div>
+          <h3>Fast purchase</h3>
+          <p>Reserve online, upload documents, and schedule delivery in minutes.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feature__icon">🛡</div>
+          <h3>Warranty options</h3>
+          <p>Choose extended warranty and service plans for peace of mind.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="listings">
+    <div class="container">
+      <div class="section__head">
+        <h2>Featured listings</h2>
+        <p class="muted">A curated selection of clean, high‑demand vehicles.</p>
+      </div>
+
+      <div class="filters" aria-label="Filters">
+        <div class="filters__row">
+          <label class="field">
+            <span class="field__label">Body type</span>
+            <select id="filterBody" class="field__control">
+              <option value="all">All</option>
+              <option value="suv">SUV</option>
+              <option value="sedan">Sedan</option>
+              <option value="hatch">Hatchback</option>
+              <option value="bakkie">Bakkie</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Max price</span>
+            <select id="filterPrice" class="field__control">
+              <option value="all">Any</option>
+              <option value="250000">R 250k</option>
+              <option value="350000">R 350k</option>
+              <option value="450000">R 450k</option>
+              <option value="600000">R 600k</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Search</span>
+            <input id="filterSearch" class="field__control" placeholder="e.g. Polo, Corolla, Ranger…" />
+          </label>
+
+          <button class="btn btn--primary filters__btn" id="btnReset" type="button">Reset</button>
+        </div>
+      </div>
+
+      <div class="grid" id="cards">
+        <article class="card" data-body="hatch" data-price="289900" data-name="VW Polo Vivo 1.4">
+          <div class="card__img" style="background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=70');"></div>
+          <div class="card__body">
+            <div class="card__top">
+              <h3>VW Polo Vivo 1.4</h3>
+              <span class="tag">Hatchback</span>
+            </div>
+            <p class="muted">2019 • 58,000 km • Manual • Petrol</p>
+
+            <div class="price">
+              <div>
+                <div class="price__main">R 289,900</div>
+                <div class="price__sub">Est. R 4,900 / month</div>
+              </div>
+              <a class="btn btn--secondary" href="#contact">Enquire</a>
+            </div>
+
+            <div class="card__meta">
+              <span>✅ History checked</span>
+              <span>🚚 Delivery</span>
+              <span>🛡 Warranty</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-body="sedan" data-price="369900" data-name="Toyota Corolla 1.8">
+          <div class="card__img" style="background-image:url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=70');"></div>
+          <div class="card__body">
+            <div class="card__top">
+              <h3>Toyota Corolla 1.8</h3>
+              <span class="tag">Sedan</span>
+            </div>
+            <p class="muted">2020 • 42,300 km • Auto • Petrol</p>
+
+            <div class="price">
+              <div>
+                <div class="price__main">R 369,900</div>
+                <div class="price__sub">Est. R 6,200 / month</div>
+              </div>
+              <a class="btn btn--secondary" href="#contact">Enquire</a>
+            </div>
+
+            <div class="card__meta">
+              <span>✅ Inspection report</span>
+              <span>🧾 Transparent fees</span>
+              <span>⭐ Top seller</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-body="suv" data-price="449900" data-name="Hyundai Tucson 2.0">
+          <div class="card__img" style="background-image:url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=70');"></div>
+          <div class="card__body">
+            <div class="card__top">
+              <h3>Hyundai Tucson 2.0</h3>
+              <span class="tag">SUV</span>
+            </div>
+            <p class="muted">2018 • 76,900 km • Auto • Petrol</p>
+
+            <div class="price">
+              <div>
+                <div class="price__main">R 449,900</div>
+                <div class="price__sub">Est. R 7,500 / month</div>
+              </div>
+              <a class="btn btn--secondary" href="#contact">Enquire</a>
+            </div>
+
+            <div class="card__meta">
+              <span>✅ 120‑pt check</span>
+              <span>🛠 Service plan</span>
+              <span>📍 Available in Gauteng</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-body="bakkie" data-price="599900" data-name="Ford Ranger 2.0 Bi‑Turbo">
+          <div class="card__img" style="background-image:url('https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1200&q=70');"></div>
+          <div class="card__body">
+            <div class="card__top">
+              <h3>Ford Ranger 2.0 Bi‑Turbo</h3>
+              <span class="tag">Bakkie</span>
+            </div>
+            <p class="muted">2021 • 61,200 km • Auto • Diesel</p>
+
+            <div class="price">
+              <div>
+                <div class="price__main">R 599,900</div>
+                <div class="price__sub">Est. R 10,100 / month</div>
+              </div>
+              <a class="btn btn--secondary" href="#contact">Enquire</a>
+            </div>
+
+            <div class="card__meta">
+              <span>✅ Full service history</span>
+              <span>🚚 Delivery</span>
+              <span>🔒 Secure checkout</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="banner" aria-label="Finance banner">
+        <div>
+          <h3>Want finance?</h3>
+          <p class="muted">Get a quick estimate in under 2 minutes. No obligation.</p>
+        </div>
+        <a class="btn btn--primary" href="#contact">Check finance options</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="testimonials">
+    <div class="container">
+      <div class="section__head">
+        <h2>Real reviews</h2>
+        <p class="muted">Because trust is the whole product.</p>
+      </div>
+
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote>
+            “The inspection report made everything feel transparent. Delivery was quick and the car was spotless.”
+          </blockquote>
+          <figcaption>— Lerato M., Johannesburg</figcaption>
+        </figure>
+
+        <figure class="quote">
+          <blockquote>
+            “No pressure, no hidden fees. The process felt professional from start to finish.”
+          </blockquote>
+          <figcaption>— Sipho N., Cape Town</figcaption>
+        </figure>
+
+        <figure class="quote">
+          <blockquote>
+            “I liked that I could compare cars easily. This feels like a real enterprise marketplace.”
+          </blockquote>
+          <figcaption>— Ameera K., Durban</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="faq">
+    <div class="container">
+      <div class="section__head">
+        <h2>FAQ</h2>
+        <p class="muted">Quick answers before you buy.</p>
+      </div>
+
+      <div class="faq">
+       *
